@@ -97,10 +97,9 @@ const HairstyleCard: React.FC<{ style: Hairstyle, isPremium?: boolean, onPreview
     <Card className={`glass overflow-hidden border-white/5 h-full flex flex-col relative rounded-[2rem] transition-all duration-500 ${isPremium ? 'ring-2 ring-cyan-500/40' : ''}`}>
        <div className="aspect-[4/5] relative overflow-hidden">
           <img 
-             src={style.imageUrl || `https://images.unsplash.com/photo-1517832606299-7ae9b720a186?q=80&w=1000`} 
+             src={style.imageUrl || `https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`} 
              alt={style.name} 
              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:grayscale-0 grayscale-[0.5]"
-             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
           

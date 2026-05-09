@@ -29,6 +29,8 @@ export default function App() {
   const [recommendations, setRecommendations] = useState<RecommendationSet | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [hairType, setHairType] = useState<'straight' | 'curly' | 'wavy'>('straight');
 
   const [userImage, setUserImage] = useState<string | null>(null);
   const [activePreviewIndex, setActivePreviewIndex] = useState(0);
@@ -57,7 +59,7 @@ export default function App() {
       setAnalysis(faceAnalysis);
       
       // 2. Get Recommendations
-      const styles = await getRecommendations(faceAnalysis, 'male', 'straight');
+      const styles = await getRecommendations(faceAnalysis, gender, hairType);
       setRecommendations(styles);
       
       // 3. Save to Firebase if logged in
@@ -72,10 +74,13 @@ export default function App() {
         origin: { y: 0.6 },
         colors: ['#ffffff', '#333333', '#111111']
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Processing failed:", error);
       setStep('landing');
-      alert("Failed to process image. Please try again with a clearer photo.");
+      const isFetchError = error.message?.includes('fetch') || error.message?.includes('NetworkError');
+      alert(isFetchError 
+        ? "AI Neural link interrupted. Please check your connection and refresh the interface." 
+        : "Biometric analysis failed. Ensure your face is clearly visible and centered.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -86,6 +91,70 @@ export default function App() {
       await loginWithGoogle();
     } catch (error) {
       console.error("Login failed:", error);
+    }
+  };
+
+  const handleDownloadReport = () => {
+    if (!analysis || !recommendations) return;
+    
+    const reportContent = `
+FACEFRAME AI - TRANSFORMATION REPORT
+------------------------------------
+Date: ${new Date().toLocaleDateString()}
+Status: Complete
+Protocol: FF_v4.2
+
+[ SUBJECT PROFILE ]
+Gender: ${gender.toUpperCase()}
+Hair Type: ${hairType.toUpperCase()}
+
+[ BIOMETRIC ANALYSIS ]
+Face Shape: ${analysis.faceShape.toUpperCase()}
+Confidence: ${analysis.confidenceScores.shape}%
+Symmetry: ${analysis.symmetry}%
+
+Analysis: ${analysis.summaryAnalysis}
+
+Key Features:
+- Jawline: ${analysis.jawline}
+- Forehead: ${analysis.forehead}
+- Cheekbones: ${analysis.cheekbones}
+- Hairline: ${analysis.hairline}
+- Skin Tone: ${analysis.skinTone}
+
+[ STYLE RECOMMENDATIONS ]
+${recommendations.bestStyles.map((s, i) => `
+${i + 1}. ${s.name.toUpperCase()}
+   Rationale: ${s.whyItWorks || s.description}
+   Suitability: ${s.suitabilityScore}%
+`).join('')}
+
+[ EXPERT TIPS ]
+${analysis.tips.map((t, i) => `- ${t}`).join('\n')}
+
+[ CELEBRITY INSPIRATION ]
+${recommendations.celebrityInspiration.join(', ')}
+
+------------------------------------
+END OF REPORT / FF_PROTOCOL_GENERATED
+    `;
+
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    try {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `FaceFrame_Analysis_${new Date().toISOString().split('T')[0]}.txt`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+    } catch (e) {
+      console.error("Download fallback triggered:", e);
+      window.open(url, '_blank');
     }
   };
 
@@ -111,11 +180,37 @@ export default function App() {
               <Hero />
               <div className="py-24 border-y border-white/5 bg-white/[0.01] relative overflow-hidden">
                  <div className="absolute inset-0 face-mesh opacity-5 pointer-events-none" />
-                 <div className="text-center mb-16 relative">
+                 <div className="text-center mb-12 relative">
                     <p className="text-[10px] font-mono uppercase tracking-[0.4em] text-cyan-400 mb-4 font-black">CORE_SYSTEM_INTERFACE_01</p>
-                    <h2 className="text-4xl font-bold uppercase tracking-tight">Begin Transformation.</h2>
+                    <h2 className="text-4xl font-bold uppercase tracking-tight mb-8">Begin Transformation.</h2>
+                    
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      <div className="flex bg-white/5 border border-white/10 rounded-2xl p-1 backdrop-blur-xl">
+                        {(['male', 'female'] as const).map((g) => (
+                          <button
+                            key={g}
+                            onClick={() => setGender(g)}
+                            className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${gender === g ? 'bg-brand-cyan text-black shadow-lg shadow-cyan-500/20' : 'text-white/40 hover:text-white/60'}`}
+                          >
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <div className="flex bg-white/5 border border-white/10 rounded-2xl p-1 backdrop-blur-xl">
+                        {(['straight', 'wavy', 'curly'] as const).map((t) => (
+                          <button
+                            key={t}
+                            onClick={() => setHairType(t)}
+                            className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${hairType === t ? 'bg-brand-cyan text-black shadow-lg shadow-cyan-500/20' : 'text-white/40 hover:text-white/60'}`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                  </div>
-                 <UploadSection onUpload={handleUpload} isLoading={false} />
+                 <UploadSection onUpload={handleUpload} isLoading={isAnalyzing} />
               </div>
               
               {/* Features Grid */}
@@ -194,13 +289,17 @@ export default function App() {
                     <Button variant="outline" size="sm" className="rounded-xl border-white/10 gap-2 font-black text-[10px] px-6 h-12 uppercase tracking-widest glass hover:border-cyan-500/30">
                        <Share2 className="w-4 h-4" /> Share_Profile
                     </Button>
-                    <Button size="sm" className="rounded-xl bg-brand-cyan text-black font-black gap-2 px-6 h-12 uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20">
+                    <Button 
+                      size="sm" 
+                      onClick={handleDownloadReport}
+                      className="rounded-xl bg-brand-cyan text-black font-black gap-2 px-6 h-12 uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20"
+                    >
                        <Download className="w-4 h-4" /> Full_Report
                     </Button>
                  </div>
               </div>
 
-              <AnalysisDashboard analysis={analysis} />
+              <AnalysisDashboard analysis={analysis} userImage={userImage} />
               
               <div className="my-24 h-[1px] w-full bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
               

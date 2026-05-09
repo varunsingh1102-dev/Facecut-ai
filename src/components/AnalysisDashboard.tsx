@@ -16,9 +16,10 @@ import {
 
 interface AnalysisDashboardProps {
   analysis: FacialAnalysis;
+  userImage?: string | null;
 }
 
-export const AnalysisDashboard = ({ analysis }: AnalysisDashboardProps) => {
+export const AnalysisDashboard = ({ analysis, userImage }: AnalysisDashboardProps) => {
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -65,6 +66,48 @@ export const AnalysisDashboard = ({ analysis }: AnalysisDashboardProps) => {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* User Image Sidebar */}
+        <motion.div variants={item} className="md:col-span-1 h-full">
+           <Card className="glass h-full p-2 relative overflow-hidden border-cyan-500/20 group rounded-[2.5rem]">
+              <div className="aspect-[4/5] relative rounded-[2rem] overflow-hidden bg-black">
+                 {userImage ? (
+                    <div className="relative w-full h-full">
+                       <img 
+                          src={userImage} 
+                          alt="Biometric Scan" 
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000" 
+                       />
+                       {/* Face Mesh SVG Overlay */}
+                       <svg className="absolute inset-0 w-full h-full text-cyan-400/30 pointer-events-none" viewBox="0 0 100 100">
+                          <path d="M50 20 L30 40 L35 70 L50 85 L65 70 L70 40 Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="animate-pulse" />
+                          <circle cx="35" cy="45" r="1.5" fill="currentColor" />
+                          <circle cx="65" cy="45" r="1.5" fill="currentColor" />
+                          <circle cx="50" cy="65" r="1" fill="currentColor" />
+                          <line x1="30" y1="40" x2="70" y2="40" stroke="currentColor" strokeWidth="0.2" strokeDasharray="2,2" />
+                          <line x1="50" y1="20" x2="50" y2="85" stroke="currentColor" strokeWidth="0.2" strokeDasharray="1,1" />
+                       </svg>
+                    </div>
+                 ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/20">
+                      <Target className="w-12 h-12 animate-pulse" />
+                    </div>
+                 )}
+                 {/* Scanning Effect Overlay */}
+                 <div className="absolute inset-x-0 h-[2px] bg-brand-cyan/50 shadow-[0_0_15px_#22d3ee] top-0 animate-[scan_3s_ease-in-out_infinite]" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                 <div className="absolute bottom-6 left-6 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse" />
+                    <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest font-black">Scan_Detected</span>
+                 </div>
+              </div>
+              <div className="mt-4 p-4 text-center">
+                 <p className="text-[9px] font-mono text-white/40 uppercase tracking-tighter mb-1">Neural Prediction Confidence</p>
+                 <div className="text-lg font-black text-brand-cyan tracking-widest">{analysis.confidenceScores.overall}%</div>
+              </div>
+           </Card>
+        </motion.div>
+
         {/* Main Shape Card */}
         <motion.div variants={item} className="md:col-span-2">
           <Card className="glass h-full p-8 relative overflow-hidden group border-cyan-500/10">

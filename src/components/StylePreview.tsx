@@ -42,8 +42,8 @@ export const StylePreview: React.FC<StylePreviewProps> = ({
     setSliderPos(Math.min(Math.max(pos, 0), 100));
   };
 
-  const currentBefore = beforeImage || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
-  const currentAfter = samples[activeSample]?.imageUrl || "https://images.unsplash.com/photo-1583035139031-bb66627bad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+  const currentBefore = beforeImage || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+  const currentAfter = samples[activeSample]?.imageUrl || "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
   return (
     <section className="py-24 px-6 max-w-6xl mx-auto w-full" id="preview">
@@ -71,6 +71,8 @@ export const StylePreview: React.FC<StylePreviewProps> = ({
                     src={currentAfter} 
                     alt="After" 
                     className="w-full h-full object-cover transition-all duration-1000"
+                    onLoad={(e) => e.currentTarget.style.opacity = '1'}
+                    style={{ opacity: 0 }}
                  />
               </div>
               
@@ -83,6 +85,8 @@ export const StylePreview: React.FC<StylePreviewProps> = ({
                     src={currentBefore} 
                     alt="Before" 
                     className="w-full h-full object-cover grayscale opacity-90"
+                    onLoad={(e) => e.currentTarget.style.opacity = '0.9'}
+                    style={{ opacity: 0 }}
                  />
               </div>
 

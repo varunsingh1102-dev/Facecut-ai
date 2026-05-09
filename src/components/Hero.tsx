@@ -66,8 +66,8 @@ export const Hero = () => {
           <div className="aspect-[4/5] relative rounded-[3rem] overflow-hidden border border-white/10 glass shadow-2xl group">
              <div className="absolute inset-0 face-mesh z-10" />
             <img 
-              src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=2070" 
-              alt="Luxury Grooming" 
+              src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070" 
+              alt="Neural Analysis" 
               className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
               referrerPolicy="no-referrer"
             />

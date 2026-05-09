@@ -84,7 +84,7 @@ export const saveAnalysis = async (userId: string, imageBase64: string, analysis
     const analysisRef = collection(db, path);
     await addDoc(analysisRef, {
       userId,
-      imageBase64: imageBase64.substring(0, 5000), // Store small preview or just ref
+      imageBase64: imageBase64.substring(0, 1000000), // Store up to ~750KB image
       faceShape: analysis.faceShape,
       symmetry: analysis.symmetry,
       analysisData: analysis,
