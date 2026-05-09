@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+    <script>
+      // Fix for 'Cannot set property fetch of #<Window>' error
+      // This happens when polyfills try to overwrite the read-only window.fetch
+      (function() {
+        var originalFetch = window.fetch;
+        // Create a 'global' object that polyfills can safely write to
+        window.global = {
+          fetch: originalFetch
+        };
+        // Also define 'globalThis' for newer environments if missing
+        if (typeof globalThis === 'undefined') {
+          window.globalThis = window;
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

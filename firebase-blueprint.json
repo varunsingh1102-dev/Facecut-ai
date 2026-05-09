@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Public and private information for a FaceFrame AI user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "isPremium": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Analysis": {
+      "title": "Facial Analysis",
+      "description": "Captured facial biometric data and AI style recommendations.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "imageBase64": { "type": "string", "description": "Thumbnail or reference to storage" },
+        "faceShape": { "type": "string" },
+        "symmetry": { "type": "integer" },
+        "analysisData": { "type": "object" },
+        "recommendations": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "faceShape", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "users/{userId}/analyses/{analysisId}": {
+      "schema": "Analysis",
+      "description": "History of facial analyses for a user"
+    }
+  }
+}

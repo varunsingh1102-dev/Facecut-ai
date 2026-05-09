@@ -1,0 +1,6 @@
+{
+  "name": "FaceFrame AI",
+  "description": "Premium AI-powered facial analysis and hairstyle recommendation platform for personalized grooming and styling.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["AI Facial Analysis", "Hairstyle Recommendations", "AI Style Preview"]
+}
